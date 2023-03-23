@@ -6,7 +6,8 @@ const socket = io("http://localhost:8080/")
 function App() {
   const [id, setId] = useState()
   const messageRef = useRef()
-  const [massage, setMassage] = useState([])
+  const [sendmassage, setSendMassage] = useState([])
+  const [recivedmassage, setrecivedMassage] = useState([])
   useEffect(()=>{
     socket.on("me",(id)=>setId(id))
   },[])
@@ -17,13 +18,14 @@ function App() {
 
   useEffect(() => {
     socket.on("recieve",(data)=>{
-      console.log("data"+massage)
-      setMassage([...massage , data])
+      console.log("data"+recivedmassage)
+      setrecivedMassage([...recivedmassage , data])
     })
-  }, [massage])
+  }, [recivedmassage])
   
   const sendmessage = ()=>{
     socket.emit("send",{msg:messageRef.current.value,form:id})
+    setSendMassage([...sendmassage , messageRef.current.value])
   }
   return (<>
   <div className="main">
@@ -34,10 +36,16 @@ function App() {
       <div className="box2">
         <p className="text-warning">hiiii</p>
       </div>
-      {massage.map(d=>
+      {sendmassage.map(d=>
+      <div className="box1">
+        <p className="text-info">{d}</p>
+      </div>
+      )}
+      {recivedmassage.map(d=>
       <div className="box2">
         <p className="text-warning">{d}</p>
-      </div>)}
+      </div>
+      )}
       
     </div>
     <div class="fixed-bottom container-sm  p-3">
