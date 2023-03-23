@@ -1,26 +1,29 @@
-import {useEffect, useState} from "react"
+import {useEffect, useRef, useState} from "react"
 import './App.css';
 import {io} from "socket.io-client"
 import {IoMdSend} from "react-icons/io"
 const socket = io("http://localhost:8080/")
 function App() {
   const [id, setId] = useState()
+  const messageRef = useRef()
+  const [massage, setMassage] = useState([])
   useEffect(()=>{
     socket.on("me",(id)=>setId(id))
   },[])
   
   useEffect(()=>{
     socket.emit("setuser",{userName:"user"+(Math.random() * (10000-1)),id})
-  },[])
+  },[id])
 
   useEffect(() => {
     socket.on("recieve",(data)=>{
-      console.log("data"+data)
+      console.log("data"+massage)
+      setMassage([...massage , data])
     })
-  }, [])
+  }, [massage])
   
   const sendmessage = ()=>{
-    socket.emit("send",{msg:"hiii",form:id})
+    socket.emit("send",{msg:messageRef.current.value,form:id})
   }
   return (<>
   <div className="main">
@@ -31,10 +34,15 @@ function App() {
       <div className="box2">
         <p className="text-warning">hiiii</p>
       </div>
+      {massage.map(d=>
+      <div className="box2">
+        <p className="text-warning">{d}</p>
+      </div>)}
+      
     </div>
     <div class="fixed-bottom container-sm  p-3">
         <div className="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2"/>
+          <input type="text" class="form-control" ref={messageRef} placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="basic-addon2"/>
           <span class="input-group-text" id="basic-addon2" onClick={sendmessage}><IoMdSend/></span>
         </div>
       </div>
