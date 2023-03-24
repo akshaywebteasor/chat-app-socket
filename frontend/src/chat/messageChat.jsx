@@ -1,24 +1,19 @@
 import { useEffect, useRef, useState } from "react"
 import {IoMdSend} from "react-icons/io"
 
-function MessageChat({socket,id}){
+function MessageChat({socket,from, to}){
     
   const messageRef = useRef()
-  //const [sendmassage, setSendMassage] = useState([])
   const [recivedmassage, setrecivedMassage] = useState([])
-  
-  console.log(recivedmassage)
-    socket.emit("setuser",{userName:"user"+(Math.random() * (10000-1)),id})
-
   useEffect(() => {
     socket.on("recieve",(data)=>{
-      console.log("data"+data)
+      console.log("data",data)
       setrecivedMassage([...recivedmassage , JSON.parse(data)])
     })
   }, [recivedmassage, socket])
   
   const sendmessage = ()=>{
-    socket.emit("send",{msg:messageRef.current.value,form:id})
+    socket.emit("send",{msg:messageRef.current.value,from,to})
     setrecivedMassage([...recivedmassage , {msg:messageRef.current.value,status:"reciever"}])
     messageRef.current.value=''
   }
@@ -27,8 +22,8 @@ function MessageChat({socket,id}){
         <div className="main">
         <div className="container-sm overflow-auto ">
         
-        {recivedmassage.map(d =><div className={d.status==="reciever"?"box1":"box2"}>
-            <p className={d.status==="reciever"?"text-info":"text-warning"}>{d.msg}</p>
+        {recivedmassage.map((d ,i)=><div key={i} className={d.status==="reciever"?"box1":"box2"}>
+            <p className={d.status==="reciever"?"text-info":"text-warning"}>{d.msg}-{d.from}</p>
         </div>
         )}
         

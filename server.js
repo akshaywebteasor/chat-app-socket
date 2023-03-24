@@ -4,7 +4,7 @@ const app = express()
 const server = http.createServer(app)
 const io = require("socket.io")(server, {
 	cors: {
-		origin: "http://localhost:3000",
+		origin: "http://localhost:3006",
 		methods: [ "GET", "POST" ]
 	}
 })
@@ -15,28 +15,23 @@ io.on("connection",(socket)=>{
     socket.on("setuser",(data)=>{
        let hh =  user.map((d)=>{
                 if(d.id===data.id){
-                    console.log(d.id, data.id   );
                     return {...d,userName:data.userName}
                 }
                 else{
                     return {...d}
             }
         })
-        // console.log("after set:", hh)
         user = hh;
         socket.emit("getUser",user)
-        console.log("after set:", user)
+        socket.broadcast.emit("getUser",user)
     })
     socket.on("send",(data)=>{
-        for(let i = 0; i < user.length; i++){
-            if(data.from !== user[i].id)
-                socket.to(user[i].id).emit("recieve", JSON.stringify({"msg":data.msg, "status":"sender"}))
-        }
+        socket.to(data.to).emit("recieve", JSON.stringify({"msg":data.msg, "status":"sender", "from":data.from}))
     })
 
     socket.on("disconnect",()=>{
-        console.log("disconnected socket", socket.id);
         user = user.filter((sid) => sid.id !== socket.id);
+        socket.broadcast.emit("getUser",user)
     })
 })
 

@@ -1,0 +1,20 @@
+span.users-listing {
+    background: #ccc;
+    padding: 18px;
+    display: flex;
+    margin: 10px;
+    justify-content: center;
+    border-radius: 60px;
+    border: 1px solid #ff0909;
+}
+span.profile {
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    background: #ccc;
+    width: 80px;
+    margin: 0 auto;
+    height: 80px;
+    align-items: center;
+    border-radius: 50%;
+}
